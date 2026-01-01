@@ -1,3 +1,50 @@
+// Add this at the top
+const path = require('path');
+
+// Update CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow all origins in development
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    
+    // In production, allow specific origins
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://your-frontend.vercel.app',
+      'https://task-manager-frontend.vercel.app'
+    ];
+    
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+
+// Add health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV 
+  });
+});
+
+// Serve frontend in production (optional)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+  });
+}
+
 const express = require('express');
 const cors = require('cors');
 const sequelize = require('./config/database');
