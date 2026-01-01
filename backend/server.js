@@ -1,3 +1,28 @@
+
+
+const express = require('express');
+const cors = require('cors');
+const sequelize = require('./config/database');
+require('dotenv').config();
+
+// Import models
+const User = require('./models/User');
+const Task = require('./models/Task');
+
+// Import routes
+const authRoutes = require('./routes/auth');
+const taskRoutes = require('./routes/tasks');
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/tasks', taskRoutes);
+
 // Add this at the top
 const path = require('path');
 
@@ -44,29 +69,6 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
   });
 }
-
-const express = require('express');
-const cors = require('cors');
-const sequelize = require('./config/database');
-require('dotenv').config();
-
-// Import models
-const User = require('./models/User');
-const Task = require('./models/Task');
-
-// Import routes
-const authRoutes = require('./routes/auth');
-const taskRoutes = require('./routes/tasks');
-
-const app = express();
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/tasks', taskRoutes);
 
 // Database connection and server start
 const PORT = process.env.PORT || 5000;
